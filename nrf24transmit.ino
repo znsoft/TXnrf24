@@ -398,16 +398,22 @@ void startLCD() {
 
   long c = millis();
 
-  while (!digitalRead(Buttons[1]))
+  while (!digitalRead(Buttons[1])) {
+    getButtons();
+    showButtons();
     if ((millis() - c) > 1000) {
+      //currentseq = 4;
 
       changeMode(CONTRAST);
 
       break;
     }
+  }
 
+  while (!digitalRead(Buttons[0])) {
+    getButtons();
+    showButtons();
 
-  while (!digitalRead(Buttons[0]))
     if ((millis() - c) > 2500) {
 
       ResetConfig();
@@ -416,7 +422,7 @@ void startLCD() {
 
       break;
     }
-
+  }
 
 }
 
@@ -541,11 +547,12 @@ void setup()
 
   //Serial.println("lcd start.");
   changeMode(RUN);
-  startLCD(); 
   for (int i = 0; i < 4; i += 1) {
     pinMode(Buttons[i], INPUT_PULLUP);
     digitalWrite(Buttons[i], HIGH);
   }
+  startLCD();
+
 
   //Start everything up
   if (!radio.begin()) {
@@ -556,7 +563,8 @@ void setup()
     beep(1500, 3000);
     //while (1) {} // hold in infinite loop
   }
-  //Serial.println("hardware found");
+  lcd.drawString("open pipe", 25, 20, 0x000, 0xFFF);
+
   radio.openWritingPipe(pipeOut);
   radio.setAutoAck(false);
   radio.setChannel(0x5a);
@@ -568,7 +576,7 @@ void setup()
   radio.setPALevel(mconfig.level);
   radio.setRetries(4, 9);
   radio.stopListening(); //start the radio comunication for Transmitter | Verici olarak sinyal iletişimi başlatılıyor
-
+  lcd.drawString("start", 18, 35, 0x000, 0xFFF);
   //Serial.println("start");
 }
 
